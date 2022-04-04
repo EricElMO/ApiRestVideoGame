@@ -29,24 +29,25 @@ public class ControllerVideoGames {
     @GetMapping("/video-games")
     public ResponseEntity<?> getListVideoGame(@RequestParam (value="genere", required=false) String genere)
     {
-        List<VideoGame> videojocs;
-
-        if(genere==null)
-            videojocs = serviceRepository.listVideoGames();
-        else
-            videojocs = serviceRepository.listVideoGamesGenere(genere);
+        List<VideoGame> videojocs = serviceRepository.listVideoGames();;
 
         if(videojocs == null) return ResponseEntity.notFound().build();
-        else return ResponseEntity.ok(videojocs);
+        else {
+            if(genere==null) return ResponseEntity.notFound().build();
+            else return ResponseEntity.ok(videojocs);
+        }
 
     }
 
     @GetMapping("/video-games/count/{genre}")
     public ResponseEntity<?>  countByGenre(@PathVariable String genre){
-        long count = serviceRepository.countByGenere(genre);
-        return ResponseEntity.ok(count);
-    }
+        if(genre==null) return ResponseEntity.notFound().build();
+        else{
+            long count = serviceRepository.countByGenere(genre);
+            return ResponseEntity.ok(count);
+        }
 
+    }
 
     @PostMapping("/video-games")
     public ResponseEntity<?>  addVideoGame(@RequestBody VideoGame newVideoGame){
@@ -56,13 +57,12 @@ public class ControllerVideoGames {
     }
 
     @GetMapping("/video-games/{price}")
-    public ResponseEntity<?> listVideoGames(@RequestParam(value="price", required=false) Double price){
+    public ResponseEntity<?> listVideoGamesByPrice(@RequestParam(value="price", required=false) Double price){
         if(price==null){
             return ResponseEntity.ok(serviceRepository.listVideoGames());
         }
         else return ResponseEntity.ok(serviceRepository.findByPrice(price));
     }
-
 
     @DeleteMapping("/video-games/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable int id){
@@ -73,7 +73,7 @@ public class ControllerVideoGames {
 
     @PutMapping("/video-games")
     public ResponseEntity<?>  updateVideoGame(@RequestBody VideoGame upatedVideoGame){
-
+        if(upatedVideoGame == null) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(serviceRepository.setVideoGame(upatedVideoGame));
 
     }
